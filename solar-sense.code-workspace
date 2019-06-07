@@ -1,8 +1,11 @@
 {
 	"folders": [
 		{
-			"path": "."
-		}
+			"path": "../solar-sense"
+		},
+		{
+			"path": "../node-red-contrib-solar-sense"
+		},
 	],
 	"settings": {}
 }
