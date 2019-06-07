@@ -19,7 +19,7 @@
     "once": false,
     "onceDelay": "",
     "x": 150,
-    "y": 700,
+    "y": 560,
     "wires": [["7369f123.f1ac5"]]
   },
   {
@@ -32,8 +32,8 @@
     "level": "1",
     "freq": "",
     "out": "out",
-    "x": 1160,
-    "y": 720,
+    "x": 1140,
+    "y": 640,
     "wires": []
   },
   {
@@ -46,8 +46,8 @@
     "level": "1",
     "freq": "",
     "out": "out",
-    "x": 1160,
-    "y": 640,
+    "x": 1140,
+    "y": 560,
     "wires": []
   },
   {
@@ -60,8 +60,8 @@
     "level": "1",
     "freq": "",
     "out": "out",
-    "x": 1160,
-    "y": 560,
+    "x": 1140,
+    "y": 480,
     "wires": []
   },
   {
@@ -78,8 +78,8 @@
     "reset": "",
     "bytopic": "all",
     "name": "",
-    "x": 920,
-    "y": 560,
+    "x": 940,
+    "y": 480,
     "wires": [["42fc4100.1bdb9"]]
   },
   {
@@ -96,8 +96,8 @@
     "reset": "",
     "bytopic": "all",
     "name": "",
-    "x": 920,
-    "y": 640,
+    "x": 940,
+    "y": 560,
     "wires": [["218085be.92763a"]]
   },
   {
@@ -114,25 +114,9 @@
     "reset": "",
     "bytopic": "all",
     "name": "",
-    "x": 920,
-    "y": 720,
+    "x": 940,
+    "y": 640,
     "wires": [["1cd3b010.d2b5f"]]
-  },
-  {
-    "id": "3ae5f42e.9cdc5c",
-    "type": "inject",
-    "z": "5be3c4b4.b12ffc",
-    "name": "50%",
-    "topic": "",
-    "payload": "50",
-    "payloadType": "num",
-    "repeat": "",
-    "crontab": "",
-    "once": false,
-    "onceDelay": 0.1,
-    "x": 110,
-    "y": 320,
-    "wires": [["7369f123.f1ac5"]]
   },
   {
     "id": "de716278.7fd7d",
@@ -147,23 +131,7 @@
     "once": false,
     "onceDelay": 0.1,
     "x": 110,
-    "y": 360,
-    "wires": [["7369f123.f1ac5"]]
-  },
-  {
-    "id": "26547ce.e0e2784",
-    "type": "inject",
-    "z": "5be3c4b4.b12ffc",
-    "name": "30%",
-    "topic": "",
-    "payload": "30",
-    "payloadType": "num",
-    "repeat": "",
-    "crontab": "",
-    "once": false,
-    "onceDelay": 0.1,
-    "x": 110,
-    "y": 400,
+    "y": 260,
     "wires": [["7369f123.f1ac5"]]
   },
   {
@@ -179,7 +147,7 @@
     "once": false,
     "onceDelay": 0.1,
     "x": 110,
-    "y": 200,
+    "y": 180,
     "wires": [["7369f123.f1ac5"]]
   },
   {
@@ -195,7 +163,7 @@
     "once": false,
     "onceDelay": 0.1,
     "x": 110,
-    "y": 120,
+    "y": 140,
     "wires": [["7369f123.f1ac5"]]
   },
   {
@@ -206,8 +174,8 @@
     "func": "const TIME_TO_FULLY_OPEN = 28000;  // in milli seconds\nconst TIME_TO_PAUSE = 3000;        // in milli seconds\nconst EPSILON = 3                  // ignore small position changes below this number of degrees\nconst press_open =  [ { payload: 1 }, null, null ];\nconst press_stop =  [ null, { payload: 1 }, null ];\nconst press_close = [ null, null, { payload: 1 } ];\nconst press_null =  [ null, null, null ];\n\nlet position = context.get('position');\nlet actions = [];\nlet delay_1 = 0\n\n// check if we need to reset the shutter\nif (position === undefined) {\n    actions.push({ delay: 0, msgs: press_close, fill: 'yellow', text: 'Resetting' });\n    delay_1 = TIME_TO_FULLY_OPEN+TIME_TO_PAUSE;\n    position = 0;\n}\n\n// clamp the command\nlet cmd = ( msg.payload < 0 + EPSILON ) ? 0 :\n          ( msg.payload > 100 - EPSILON ) ? 100 :\n            msg.payload;\n\n// when no significant change\nif (Math.abs(position - cmd) < EPSILON) {\n    actions.push({ delay: delay_1, msgs: press_null, fill: 'yellow', text: `No Change for ${cmd.toFixed(1)}%` });\n    cmd = position;\n    actions.push({ delay: delay_1+TIME_TO_PAUSE, msgs: press_null, fill: 'green', text: `Ready at ${cmd.toFixed(1)}%` });\n\n// when need to open shutter wider\n} else if (cmd > position) {\n    const delay_2 = TIME_TO_FULLY_OPEN * Math.abs(cmd - position) / 100;\n    const maybe_press_stop = (cmd == 100) ? press_null : press_stop;\n    actions.push({ delay: delay_1, msgs: press_open, fill: 'yellow', text: `Opening for ${(delay_2/1000).toFixed(1)}s` });\n    actions.push({ delay: delay_1+delay_2, msgs: maybe_press_stop, fill: 'green', text: `Ready at ${cmd.toFixed(1)}%` });\n\n// when need to close shutter narrower\n} else {\n    const delay_2 = TIME_TO_FULLY_OPEN * Math.abs(cmd - position) / 100;\n    const maybe_press_stop = (cmd === 0) ? press_null : press_stop;\n    actions.push({ delay: delay_1, msgs: press_close, fill: 'yellow', text: `Closing for ${(delay_2/1000).toFixed(1)}s` });\n    actions.push({ delay: delay_1+delay_2, msgs: maybe_press_stop, fill: 'green', text: `Ready at ${cmd.toFixed(1)}%` });\n}\n\ncontext.set('position', cmd);\n\n// schedule all the actions\nactions.forEach(action => {\n    setTimeout(function() {\n        node.status({fill: action.fill, shape: 'dot', text: action.text});\n        node.send( action.msgs );\n    }, action.delay);\n\n})\n\nreturn;",
     "outputs": 3,
     "noerr": 0,
-    "x": 680,
-    "y": 640,
+    "x": 700,
+    "y": 560,
     "wires": [["db869772.194098"], ["f4b5c0db.aa01f"], ["d8bbc3ef.384c"]],
     "inputLabels": ["Position %"],
     "outputLabels": ["Open", "Stop", "Close"]
@@ -225,23 +193,7 @@
     "once": false,
     "onceDelay": 0.1,
     "x": 110,
-    "y": 440,
-    "wires": [["7369f123.f1ac5"]]
-  },
-  {
-    "id": "959f88c3.315438",
-    "type": "inject",
-    "z": "5be3c4b4.b12ffc",
-    "name": "10%",
-    "topic": "",
-    "payload": "10",
-    "payloadType": "num",
-    "repeat": "",
-    "crontab": "",
-    "once": false,
-    "onceDelay": 0.1,
-    "x": 110,
-    "y": 480,
+    "y": 300,
     "wires": [["7369f123.f1ac5"]]
   },
   {
@@ -257,7 +209,7 @@
     "once": false,
     "onceDelay": 0.1,
     "x": 110,
-    "y": 520,
+    "y": 340,
     "wires": [["7369f123.f1ac5"]]
   },
   {
@@ -273,39 +225,7 @@
     "once": false,
     "onceDelay": 0.1,
     "x": 110,
-    "y": 280,
-    "wires": [["7369f123.f1ac5"]]
-  },
-  {
-    "id": "d59a8873.7ce738",
-    "type": "inject",
-    "z": "5be3c4b4.b12ffc",
-    "name": "70%",
-    "topic": "",
-    "payload": "70",
-    "payloadType": "num",
-    "repeat": "",
-    "crontab": "",
-    "once": false,
-    "onceDelay": 0.1,
-    "x": 110,
-    "y": 240,
-    "wires": [["7369f123.f1ac5"]]
-  },
-  {
-    "id": "a8888bb9.05ece8",
-    "type": "inject",
-    "z": "5be3c4b4.b12ffc",
-    "name": "90%",
-    "topic": "",
-    "payload": "90",
-    "payloadType": "num",
-    "repeat": "",
-    "crontab": "",
-    "once": false,
-    "onceDelay": 0.1,
-    "x": 110,
-    "y": 160,
+    "y": 220,
     "wires": [["7369f123.f1ac5"]]
   },
   {
@@ -328,8 +248,8 @@
     "endOffset": 0,
     "endOffsetType": "none",
     "endOffsetMultiplier": 60000,
-    "x": 670,
-    "y": 140,
+    "x": 630,
+    "y": 60,
     "wires": [["a7759096.904d6"]]
   },
   {
@@ -340,8 +260,8 @@
     "func": "\n// 86 Excelsior Rd is aligned 10° to the east of True North \nconst orientation = ( 10 ) * (2 * Math.PI) / 360;               // orientation of blind axis 0 = North, 90 = East, etc.\nconst h = Math.sin(msg.payload.altitudeRadians);                // unit height of sun vertically\nconst z = Math.cos(msg.payload.altitudeRadians);                // unit distance to sun horizontally\nconst w = z * Math.sin(msg.payload.azimuthRadians-orientation); // unit distance to sun horizontally perpendicular to blind axis\nconst theta = Math.atan2(h, w)*360/(2*Math.PI);                 // blind angle to sun 0 = sunset, 180 = sunrise\nmsg.payload.blind_angle = theta;\n\nconst status_text = `z ${z.toFixed(1)} | h ${h.toFixed(1)} | w ${w.toFixed(1)} | Theta ${theta.toFixed(1)}°`;\nnode.status({fill:\"green\", shape:\"dot\", text: status_text });\n\nconst log_text = `Elev ${msg.payload.altitude.toFixed(1)} | Azim ${msg.payload.azimuth.toFixed(1)} | ${status_text}`\nnode.log(log_text);\n\nreturn msg;",
     "outputs": 1,
     "noerr": 0,
-    "x": 960,
-    "y": 140,
+    "x": 900,
+    "y": 60,
     "wires": [["eeae0e1a.8c182"]],
     "inputLabels": ["Sun Position"],
     "outputLabels": ["Blind Angle"]
@@ -354,8 +274,8 @@
     "func": "// Convert blind_angle (0=sunset, 180=sunrise) to shutter position (0=closed, 100=open)\n//\n//     shutter position\n//            |\n//            |\n//        100 |   +\n//            |   *   *\n//            |   *       *\n//         60 *****           +               ****\n//         50 *                   *           *  *\n//            *                       *       *  *\n//            *                           *   *  *\n//            *                               +  *\n//  **********+----------------------------------+*********>  blind_angle\n//            0   15          90             165 180°\n//          sunset                               sunrise\n//\nconst ANGLE_AT_100PC = 30;                      // equiv to 90° at 60%\nconst ANGLE_REFLECTION = -95;                  // angle to point reflection at -90 is vertically down\nconst ba = msg.payload.blind_angle;\nconst m = -100/(180 - ANGLE_AT_100PC);         // line slope\nconst c = 100 - m * ANGLE_AT_100PC;            // line intercept\n\nmsg.payload = (ba < -180) ? 0 :                 // invalid ie closed\n              (ba > 180) ? 0 :                  // invalid ie closed\n              (ba < -175) ? 60 :                // =180 to -175 sunrise ie open wide\n              (ba < 0) ? 0 :                    // -175 to 0 ie sun below horiz ie closed\n              (ba < ANGLE_AT_100PC) ? 60 :      // 0 to 15 very late afternoon  ie open wide\n              (ba > 165) ? 60 :                 // 165 to 180 very early morning ie open wide\n              (ba > 100) ? m * ((ba+ANGLE_REFLECTION)/2+90) + c :  // track the reflection  \n              m * ba + c;                       // track the sun ie y = mx + c\n\nconst text = `Theta ${ba.toFixed(1)}° | Pos ${msg.payload.toFixed(1)}%`;\nnode.status({fill:\"green\", shape:\"dot\", text });\nnode.log(text);\n\nreturn msg;",
     "outputs": 1,
     "noerr": 0,
-    "x": 1170,
-    "y": 140,
+    "x": 1130,
+    "y": 60,
     "wires": [["6876dfec.b8a98"]],
     "inputLabels": ["Blind Angle"],
     "outputLabels": ["Position %"]
@@ -420,7 +340,7 @@
     "addPayload3Days": "*",
     "recalcTime": 2,
     "x": 130,
-    "y": 580,
+    "y": 440,
     "wires": [["7369f123.f1ac5"]]
   },
   {
@@ -483,7 +403,7 @@
     "addPayload3Days": "*",
     "recalcTime": 2,
     "x": 140,
-    "y": 640,
+    "y": 500,
     "wires": [["7369f123.f1ac5"]]
   },
   {
@@ -495,20 +415,24 @@
     "outputs": 3,
     "noerr": 0,
     "x": 380,
-    "y": 320,
+    "y": 240,
     "wires": [["44e68c74.a47ba4"], ["f6bae5d1.01b438"], ["6876dfec.b8a98"]],
-    "outputLabels": ["Automatic Control", "Weather Control", "Manual Control"]
+    "outputLabels": [
+      "Automatic Control",
+      "Check Weather Forecast",
+      "Manual Control"
+    ]
   },
   {
     "id": "6daf2c19.3ee454",
     "type": "function",
     "z": "5be3c4b4.b12ffc",
-    "name": "Check for Rain",
+    "name": "Rain?",
     "func": "const close_shutter = [ null, { payload: 0 } ];\nconst auto_shutter = [ msg, null ];\nconst format_result = w => `Temp ${w.temperature}°C | Cloud ${(w.cloudCover*100).toFixed(0)}% | Rain ${w.precipIntensity.toFixed(2)} mm/hr | Prob ${(w.precipProbability*100).toFixed(0)}%`;\nconst format_time = d => new Date(d*1000).toString().split('(')[0];\n\nlet output_msgs = auto_shutter;\nlet w = {};\n\nw = msg.payload.currently;\nnode.log(`${format_time(w.time)}- ${format_result(w)}`);\nif (w.precipProbability>0.03) {\n    node.status({fill: 'yellow', shape: 'dot', text: format_result(w)});\n    output_msgs = close_shutter;\n} else {\n    node.status({fill: 'green', shape: 'dot', text: format_result(w)});\n}\n\n\nw = msg.payload.hourly.data[0];\nnode.log(`${format_time(w.time)}- ${format_result(w)}`);\n\nw = msg.payload.hourly.data[1];\nnode.log(`${format_time(w.time)}- ${format_result(w)}`);\n\n\nreturn output_msgs;",
     "outputs": 2,
     "noerr": 0,
-    "x": 740,
-    "y": 320,
+    "x": 690,
+    "y": 240,
     "wires": [["44e68c74.a47ba4"], ["6876dfec.b8a98"]],
     "inputLabels": ["Dark Rain Forecast"],
     "outputLabels": ["No Rain", "Force Close"]
@@ -517,7 +441,7 @@
     "id": "f6bae5d1.01b438",
     "type": "http request",
     "z": "5be3c4b4.b12ffc",
-    "name": "Get Weather",
+    "name": "Weather",
     "method": "GET",
     "ret": "obj",
     "paytoqs": false,
@@ -525,8 +449,8 @@
     "tls": "",
     "proxy": "",
     "authType": "basic",
-    "x": 570,
-    "y": 320,
+    "x": 560,
+    "y": 240,
     "wires": [["6daf2c19.3ee454"]]
   },
   {
@@ -534,8 +458,8 @@
     "type": "pir",
     "z": "5be3c4b4.b12ffc",
     "name": "",
-    "x": 90,
-    "y": 780,
+    "x": 110,
+    "y": 640,
     "wires": [["197b86dc.854739"]]
   },
   {
@@ -551,8 +475,9 @@
     "once": false,
     "onceDelay": 0.1,
     "x": 110,
-    "y": 80,
-    "wires": [["7369f123.f1ac5"]]
+    "y": 100,
+    "wires": [["7369f123.f1ac5"]],
+    "outputLabels": ["Automatic control to sun position"]
   },
   {
     "id": "70e6484.fbfddb8",
@@ -567,8 +492,9 @@
     "once": false,
     "onceDelay": 0.1,
     "x": 110,
-    "y": 40,
-    "wires": [["7369f123.f1ac5"]]
+    "y": 60,
+    "wires": [["7369f123.f1ac5"]],
+    "outputLabels": ["Force Auto ignoring weather forecast"]
   },
   {
     "id": "197b86dc.854739",
@@ -578,8 +504,8 @@
     "func": "const code = String(msg.payload)\nconst mapping = {\n    '398': 0,\n    '399': 'auto',\n    '400': 'auto',\n    '401': 'auto_force',\n    '512': 0,\n    '513': 10,\n    '514': 20,\n    '515': 30,\n    '516': 40,\n    '517': 50,\n    '518': 60,\n    '519': 70,\n    '520': 80,\n    '521': 90,\n}\n\nif (mapping[code] !== undefined) {\n    msg.payload = mapping[code];\n    node.status({ fill:\"green\", shape:\"dot\", text: `Cmd ${msg.payload}`});\n} else {\n    msg = null;\n    node.status({fill:\"yellow\", shape:\"dot\", text: `Code ${code}`});\n}\n\nreturn msg;",
     "outputs": 1,
     "noerr": 0,
-    "x": 220,
-    "y": 780,
+    "x": 240,
+    "y": 640,
     "wires": [["7369f123.f1ac5"]]
   },
   {
