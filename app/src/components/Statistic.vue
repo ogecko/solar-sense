@@ -17,16 +17,16 @@
 }
 </style>
 
-<script lang="ts">
+<script>
 import Vue from "vue";
 
 export default Vue.extend({
-  name: "Statistic",
+  name: "oStatistic",
   props: {
     value: { type: String, default: "" },
     units: { type: String, default: "" },
     label: { type: String, default: "" },
-    icon: { type: String, default: "" }
-  }
+    icon: { type: String, default: "" },
+  },
 });
 </script>

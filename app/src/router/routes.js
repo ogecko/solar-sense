@@ -1,17 +1,16 @@
-import { RouteConfig } from 'vue-router'
-const routes: RouteConfig[] = [
+const routes = [
   {
     path: "/",
     component: () => import("layouts/MyLayout.vue"),
-    children: [{ path: "", component: () => import("pages/Home.vue") }]
-  }
+    children: [{ path: "", component: () => import("pages/Home.vue") }],
+  },
 ];
 
 // Always leave this as last one
 if (process.env.MODE !== "ssr") {
   routes.push({
     path: "*",
-    component: () => import("pages/Error404.vue")
+    component: () => import("pages/Error404.vue"),
   });
 }
 

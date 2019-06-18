@@ -29,9 +29,8 @@ export default function(/* { ssrContext } */) {
       sunAngle: 30,
       mode: "Automatic",
       positionCurrent: 30,
-      controlSummary: "Automatically tracking the sun"
+      controlSummary: "Automatically tracking the sun",
     },
-
   });
 
   return Store;

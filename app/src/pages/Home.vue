@@ -1,5 +1,9 @@
 <template>
-  <q-page class>
+  <q-page class="bg-blue-grey-9">
+    <div class="row items-center text-center">
+      <Indicator size="100px" />
+    </div>
+
     <div class="row items-center text-center">
       <Statistic
         :value="$store.state.tempMin | num1"
@@ -45,30 +49,36 @@
         label="Sunset"
         class="text-grey-6"
       />
-      <Statistic :value="new Date() | time" label="Now"/>
-      <Statistic :value="$store.state.sunRise | time" icon="far fa-sun" label="Sunrise"/>
+      <Statistic :value="new Date() | time" label="Now" />
+      <Statistic
+        :value="$store.state.sunRise | time"
+        icon="far fa-sun"
+        label="Sunrise"
+      />
     </div>
   </q-page>
 </template>
 
 <style></style>
 
-<script lang="ts">
+<script>
 import Vue from "vue";
+import { date } from "quasar";
 import Statistic from "../components/Statistic.vue";
-const n00 = (n: number) => (n > 9 ? "" + n : "0" + n);
+import Indicator from "../components/Indicator.vue";
 
 export default Vue.extend({
   name: "PageIndex",
   components: {
-    Statistic
+    Statistic,
+    Indicator,
   },
   filters: {
-    num2: (x: number) => x.toFixed(2),
-    num1: (x: number) => x.toFixed(1),
-    num0: (x: number) => x.toFixed(0),
-    percent: (x: number) => (x * 100).toFixed(0),
-    time: (x: Date) => `${n00(x.getHours())}:${n00(x.getMinutes())}`
-  }
+    num2: x => x.toFixed(2),
+    num1: x => x.toFixed(1),
+    num0: x => x.toFixed(0),
+    percent: x => (x * 100).toFixed(0),
+    time: d => `${date.formatDate(d, "h:mm a")}`,
+  },
 });
 </script>
