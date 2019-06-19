@@ -1,9 +1,15 @@
 <template>
   <q-page class="bg-blue-grey-9">
     <div class="row items-center text-center">
-      <Indicator size="100px" />
+      <Indicator
+        size="300px"
+        :value="75"
+        :min="0"
+        :max="120"
+        :gap="180"
+        rotate="ccw"
+      />
     </div>
-
     <div class="row items-center text-center">
       <Statistic
         :value="$store.state.tempMin | num1"
@@ -17,6 +23,7 @@
         icon="fas fa-thermometer-half"
         label="Current"
         units="°C"
+        class="text-grey-2"
       />
       <Statistic
         :value="$store.state.tempMax | num1"
@@ -39,22 +46,9 @@
         icon="fas fa-cloud-rain"
         label="Chance"
         units="%"
+        class="text-grey-2"
       />
-      <div class="col">{{ $store.state.weatherSummary }}</div>
-    </div>
-    <div class="row items-center text-center">
-      <Statistic
-        :value="$store.state.sunSet | time"
-        icon="fas fa-sun"
-        label="Sunset"
-        class="text-grey-6"
-      />
-      <Statistic :value="new Date() | time" label="Now" />
-      <Statistic
-        :value="$store.state.sunRise | time"
-        icon="far fa-sun"
-        label="Sunrise"
-      />
+      <div class="col text-grey-6">{{ $store.state.weatherSummary }}</div>
     </div>
   </q-page>
 </template>
